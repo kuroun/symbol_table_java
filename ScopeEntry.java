@@ -13,8 +13,10 @@ public abstract class ScopeEntry extends Entry {
     private Iterator iterator;
 
     public ScopeEntry(String name) {
+        super(name);
     }
     public ScopeEntry(String name, Type t) {
+        super(name, t);
     }
 
     /**
@@ -37,6 +39,17 @@ public abstract class ScopeEntry extends Entry {
      * and so the bindings can be retrieved in the proper order!
      */
     public boolean addBinding(String name, Entry symTabEntry) {
+        if(!localSymtab.containsKey(name)){
+            LinkedHashMap newmap= localSymtab.clone();
+            localSymtab.clear();
+            localSymtab.put(name, symTabEntry);
+            localSymtab.putAll(newmap);
+            return true;
+        }
+        else {
+            return false;
+        }
+
     }
 
     /**
@@ -44,6 +57,7 @@ public abstract class ScopeEntry extends Entry {
      * Return null if not found.
      */
     public Entry lookup(String name) {
+        return localSymtab.get(name);
     }
 
     // The purpose of the following iterator methods is to allow access to 
@@ -63,16 +77,19 @@ public abstract class ScopeEntry extends Entry {
      *  in the iteration.
      */
     public void reset() {
+        iterator = localSymtab.iterator();
     }
 
     /** Returns the current element and advances the iteration.
      */
     public Entry next() {
+        return iterator.next();
     }
 
     /** Returns whether or not there are more elements to be iterated.
      */
     public boolean hasMore() {
+        return iterator.hasNext();
     }
 
     /** Return a String representing all the entries in the local symbol table.
@@ -85,7 +102,14 @@ public abstract class ScopeEntry extends Entry {
 	// Use the iterator methods, reset(), next(), and hasMore() 
 	// to get the entries; then for each entry call toString().
 	// Add a semicolon after each VariableEntry.  
-
+        reset();
+        String result = "";
+        while(hasMore()) {
+            obj = next();
+            result += (VariableEntry.class.isInstance(obj)) ? obj.toString() + ";" : obj.toString();
+        }  
+        result += "\n"; 
+        return result;
     }
 }              // End of class ScopeEntry            
 
