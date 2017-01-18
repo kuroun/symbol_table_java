@@ -1,6 +1,7 @@
 
 public class ClassEntry extends ScopeEntry {
     public ClassEntry(String name) {
+        super(name);
     }
 
     /** 
@@ -11,12 +12,14 @@ public class ClassEntry extends ScopeEntry {
      * superclass (ScopeEntry), otherwise return false.  
      */
     public boolean addBinding(String name, Entry symTabEntry) {
+        return BlockEntry.class.isInstance(symTabEntry) ? false : super.addBinding(name, symTabEntry);
     }
 
     /** 
      * Return a String representation of the class.
      */
     public String toString() {
+        return "class " + super.name() + "{\n" + super.toString() + "}\n";
     }
 }              // End of class ClassEntry            
 
