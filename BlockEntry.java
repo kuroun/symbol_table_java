@@ -6,7 +6,7 @@ public class BlockEntry extends ScopeEntry {
     
     public BlockEntry() {
         super(new String("##Block" + blockCount + "##"));
-	blockCount++;  // ensures that there are no name conflicts among blocks
+	    blockCount++;  // ensures that there are no name conflicts among blocks
     }
 
     /** 
@@ -16,6 +16,7 @@ public class BlockEntry extends ScopeEntry {
      * symbol table declared in the superclass.  
      */
     public boolean addBinding(String name, Entry symTabEntry) {
+        return VariableEntry.class.isInstance(symTabEntry) ? super.addBinding(name, symTabEntry) : false;
     }
 
     /** 
@@ -27,6 +28,7 @@ public class BlockEntry extends ScopeEntry {
 	// For example, super.toString() should print all of the 
 	// bindings declared in this block, i.e., this 
 	// method should be written in one line (see GlobalScope).
+        return "{\n" + super.toString() + "\n}\n";
 
     }
 }              // End of class BlockEntry            
