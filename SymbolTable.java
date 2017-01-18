@@ -10,7 +10,10 @@ public class SymbolTable {
      *  at the bottom of the stack.  In this case there is only one entry 
      *  on the scope stack.  
      */
+    private Stack stack = new Stack<ScopeEntry>();
     public SymbolTable() {
+        GlobalEntry global = new GlobalEntry();
+        stack.push(global);
     }
 
     /**  
@@ -21,6 +24,7 @@ public class SymbolTable {
      *  'symTabEntry'.  
      */
     public boolean insertBinding(Entry symTabEntry) {
+        return stack.peek().addBinding(symTabEntry.name(), symTabEntry);
     }
 
     /**  
@@ -28,6 +32,7 @@ public class SymbolTable {
      *  i.e., call toString() on the top entry.
      */
     public String currentScope() {
+        return stack.peek().toString();
     }
 
     /**  
@@ -41,6 +46,11 @@ public class SymbolTable {
      *  name denotes two different entities.  
      */
     public Entry lookup(String name) {
+        while(!stack.empty()){
+            Entry found = stack.pop().lookup(name);
+            if(found != null) return found;
+        } 
+        return null;
     }
 
     /**  
@@ -54,6 +64,12 @@ public class SymbolTable {
      *  Return null if 'name1.name2' is not found.
      */
     public Entry lookup(String name1, String name2) {
+        if(lookup(name1) != null && ClassEntry.class.isInstance(lookup(name1)){
+            return lookup(name2);
+        }
+        else {
+            return null;
+        }
     }
 
     /**  
@@ -61,6 +77,11 @@ public class SymbolTable {
      *  Return null if no such object is found in the scope stack.
      */
     public MethodEntry enclosingMethod() {
+        while(!stack.empty()){
+            Entry found = MethodEntry.class.isInstance(stack.pop());
+            if(found != null) return found;
+        } 
+        return null;
     }
 
     /**  
@@ -70,6 +91,7 @@ public class SymbolTable {
      *  Return true if the operation is successful, otherwise return false.
      */
     public boolean enterScope(ScopeEntry scopeEntry) {
+        return (stack.push(scopeEntry) != null) ? true : false;
     }
 
     /**  
@@ -83,6 +105,7 @@ public class SymbolTable {
      *  null and do not leave the global scope.  
      */
     public ScopeEntry leaveScope() {
+        return GlobalEntry.class.isInstance(stack.peek()) ? null : stack.pop();
     }
 
     /**  
@@ -93,6 +116,8 @@ public class SymbolTable {
      *  Return true if the operation is successful, otherwise return false.
      */
     public boolean enterNewBlock() {
+        BlockEntry block = new BlockEntry();
+        return (stack.push(block) != null) ? true : false;
     }
 
     /**  
@@ -101,5 +126,10 @@ public class SymbolTable {
      *  i.e., call toString() on the bottom entry of the stack.
      */
     public String toString() {
+        ScopeEntry global = new ScopeEntry();
+        while(!stack.empty()){
+            global = stack.pop();
+        }
+        return global.toString();
     }
 }              // End of class SymbolTable            
