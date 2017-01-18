@@ -12,6 +12,7 @@ public class MethodEntry extends ScopeEntry {
      * formal parameters can be inserted.
      */
     public boolean addBinding(String name, Entry symTabEntry) {
+        return VariableEntry.class.isInstance(symTabEntry) ? super.addBinding(name, symTabEntry) : false;
     }
 
     /** 
@@ -26,6 +27,14 @@ public class MethodEntry extends ScopeEntry {
 	// Note that the superclass method toString() cannot be used 
 	// here because the delimiters are different (comma here 
 	// versus semicolon in the superclass method).
+        super.reset();
+        String result = super.type().toString() + " " + super.name() + "(";
+        while(super.hasMore()) {
+            obj = super.next();
+            result +=  obj.toString() + ",";
+        }   
+        result += ");\n";
+        return result;
 
     }
 }              // End of class MethodEntry            
