@@ -30,8 +30,7 @@ public class MethodEntry extends ScopeEntry {
         super.reset();
         String result = super.type().toString() + " " + super.name() + "(";
         while(super.hasMore()) {
-            obj = super.next();
-            result +=  obj.toString() + ",";
+            result +=  super.next().toString() + ",";
         }   
         result += ");\n";
         return result;

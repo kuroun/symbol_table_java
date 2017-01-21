@@ -6,11 +6,11 @@ public abstract class ScopeEntry extends Entry {
 
     // The following data structure is needed to preserve the order 
     // that the bindings are recorded in this ScopeEntry.
-    private LinkedHashMap localSymtab = new LinkedHashMap(5);
+    private LinkedHashMap<String, Entry> localSymtab = new LinkedHashMap<String,Entry>(5);
 
     // The following field is needed for methods reset(), hasNext(), 
     // and next().
-    private Iterator iterator;
+    private Iterator<Entry> iterator;
 
     public ScopeEntry(String name) {
         super(name);
@@ -40,7 +40,7 @@ public abstract class ScopeEntry extends Entry {
      */
     public boolean addBinding(String name, Entry symTabEntry) {
         if(!localSymtab.containsKey(name)){
-            LinkedHashMap newmap= localSymtab.clone();
+            LinkedHashMap newmap= (LinkedHashMap)localSymtab.clone();
             localSymtab.clear();
             localSymtab.put(name, symTabEntry);
             localSymtab.putAll(newmap);
@@ -57,7 +57,7 @@ public abstract class ScopeEntry extends Entry {
      * Return null if not found.
      */
     public Entry lookup(String name) {
-        return localSymtab.get(name);
+        return (Entry)localSymtab.get(name);
     }
 
     // The purpose of the following iterator methods is to allow access to 
@@ -77,7 +77,7 @@ public abstract class ScopeEntry extends Entry {
      *  in the iteration.
      */
     public void reset() {
-        iterator = localSymtab.iterator();
+        iterator = localSymtab.values().iterator();
     }
 
     /** Returns the current element and advances the iteration.
@@ -105,7 +105,7 @@ public abstract class ScopeEntry extends Entry {
         reset();
         String result = "";
         while(hasMore()) {
-            obj = next();
+            Entry obj = next();
             result += (VariableEntry.class.isInstance(obj)) ? obj.toString() + ";" : obj.toString();
         }  
         result += "\n"; 
